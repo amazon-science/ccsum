@@ -30,46 +30,44 @@ import os
 import sys
 import datetime
 from datetime import date
+import pickle
 
 from newsplease.crawler import commoncrawl_crawler as commoncrawl_crawler
 
-import boto3
-import botocore
-
-import pickle
-
-s3client = boto3.client('s3', config=botocore.client.Config(signature_version=botocore.UNSIGNED))
-
-
 __author__ = "Felix Hamborg"
-__copyright__ = "Copyright 2017"
+__copyright__ = "Copyright 2024"
 __credits__ = ["Sebastian Nagel"]
 
 
 ############ YOUR CONFIG ############
 # download dir for warc files
-my_local_download_dir_warc = '/home/ubuntu/data/warc_temp'
+my_local_download_dir_warc = './ccnews_warc/'
 # download dir for articles
-my_local_download_dir_article = '/home/ubuntu/data/cc_news_202207_202212'
-
-print(my_local_download_dir_article)
+my_local_download_dir_article = './ccnews_download_articles/'
 # hosts (if None or empty list, any host is OK)
 
-with open('english_domain_list.pkl', 'rb') as f:
-    my_filter_valid_hosts = pickle.load(f)
-# my_filter_valid_hosts = []
+# only keep hosts in the ccsum corpus
+with open("ccnews_domains.txt", "r") as file:
+    my_filter_valid_hosts = file.readlines()
+    # Removing newline characters
+    my_filter_valid_hosts= [line.strip() for line in my_filter_valid_hosts]
 
-# start date (if None, any date is OK as start date), as datetime
-my_filter_start_date = None  # datetime.datetime(2016, 1, 1)
+# only download urls in the ccsum corpus
+with open('article_urls.pkl', 'rb') as article_file:
+    allowed_urls = pickle.load(article_file)
+
+my_filter_start_date = datetime.datetime(2018, 1, 1)  # datetime.datetime(2016, 1, 1)
 # end date (if None, any date is OK as end date), as datetime
-my_filter_end_date = None  # datetime.datetime(2016, 12, 31)
+my_filter_end_date = datetime.datetime(2023, 1, 1)  # datetime.datetime(2016, 12, 31)
 # Only .warc files published within [my_warc_files_start_date, my_warc_files_end_date) will be downloaded.
 # Note that the date a warc file has been published does not imply it contains only news
 # articles from that date. Instead, you must assume that the warc file can contain articles
 # from ANY time before the warc file was published, e.g., a warc file published in August 2020
 # may contain news articles from December 2016.
-my_warc_files_start_date = datetime.datetime(2022, 10, 1) # example: datetime.datetime(2020, 3, 1)
-my_warc_files_end_date = datetime.datetime(2022, 12, 31) # example: datetime.datetime(2020, 3, 2)
+my_warc_files_start_date = datetime.datetime(2018, 1, 1) # example: datetime.datetime(2020, 3, 1)
+my_warc_files_end_date = datetime.datetime(2023, 1, 1) # example: datetime.datetime(2020, 3, 2)
+
+
 # if date filtering is strict and news-please could not detect the date of an article, the article will be discarded
 my_filter_strict_date = True
 # if True, the script checks whether a file has been downloaded already and uses that file instead of downloading
@@ -78,13 +76,13 @@ my_reuse_previously_downloaded_files = True
 # continue after error
 my_continue_after_error = True
 # show the progress of downloading the WARC files
-my_show_download_progress = True
+my_show_download_progress = False
 # log_level
 my_log_level = logging.INFO
 # json export style
 my_json_export_style = 1  # 0 (minimize), 1 (pretty)
 # number of extraction processes
-my_number_of_extraction_processes = 48
+my_number_of_extraction_processes = 10
 # if True, the WARC file will be deleted after all articles have been extracted from it
 my_delete_warc_after_extraction = True
 # if True, will continue extraction from the latest fully downloaded but not fully extracted WARC files and then
@@ -100,13 +98,8 @@ my_dry_run=False
 
 
 # logging
-import watchtower
-logging.basicConfig(
-        level=my_log_level,
-        handlers=[logging.StreamHandler(), watchtower.CloudWatchLogHandler()]
-        )
+logging.basicConfig(level=my_log_level)
 __logger = logging.getLogger(__name__)
-#__logger.addHandler(watchtower.CloudWatchLogHandler())
 
 
 def __setup__():
@@ -125,10 +118,7 @@ def __get_pretty_filepath(path, article):
     :return:
     """
     short_filename = hashlib.sha256(article.filename.encode()).hexdigest()
-    sub_dir = article.source_domain
-    final_path = os.path.join(path, sub_dir)
-    os.makedirs(final_path, exist_ok=True)
-    return os.path.join(final_path, short_filename + '.json')
+    return os.path.join(path, short_filename + '.json')
 
 
 def on_valid_article_extracted(article):
@@ -138,13 +128,14 @@ def on_valid_article_extracted(article):
     :param article:
     :return:
     """
-    # do whatever you need to do with the article (e.g., save it to disk, store it in ElasticSearch, etc.)
+    if article.__dict__['url'] not in allowed_urls:
+        return
+    
     with open(__get_pretty_filepath(my_local_download_dir_article, article), 'w', encoding='utf-8') as outfile:
         if my_json_export_style == 0:
             json.dump(article.__dict__, outfile, default=str, separators=(',', ':'), ensure_ascii=False)
         elif my_json_export_style == 1:
             json.dump(article.__dict__, outfile, default=str, indent=4, sort_keys=True, ensure_ascii=False)
-        # ...
 
 
 def callback_on_warc_completed(warc_path, counter_article_passed, counter_article_discarded,
@@ -200,10 +191,9 @@ def main():
                                                log_level=my_log_level,
                                                delete_warc_after_extraction=my_delete_warc_after_extraction,
                                                continue_process=True,
-                                               fetch_images=my_fetch_images)
+                                               fetch_images=my_fetch_images,
+                                               dry_run=my_dry_run)
 
 
 if __name__ == "__main__":
-    print(f"starting time {datetime.datetime.now()}")
     main()
-    print(f"finishing time {datetime.datetime.now()}")
