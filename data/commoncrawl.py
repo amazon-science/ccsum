@@ -53,8 +53,10 @@ with open("ccnews_domains.txt", "r") as file:
     my_filter_valid_hosts= [line.strip() for line in my_filter_valid_hosts]
 
 # only download urls in the ccsum corpus
-with open('article_urls.pkl', 'rb') as article_file:
+with open('article_urls.part1.pkl', 'rb') as article_file:
     allowed_urls = pickle.load(article_file)
+with open('article_urls.part2.pkl', 'rb') as article_file:
+    allowed_urls = allowed_urls.union(pickle.load(article_file))
 
 my_filter_start_date = datetime.datetime(2018, 1, 1)  # datetime.datetime(2016, 1, 1)
 # end date (if None, any date is OK as end date), as datetime
