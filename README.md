@@ -1,5 +1,5 @@
 ## CCSum: A Large-Scale and High-Quality Dataset for Abstractive News Summarization (NAACL 2024)
-This Repo contains the code for the paper "CCSum: A Large-Scale and High-Quality Dataset for Abstractive News Summarization."
+This Repo contains the code for the paper ["CCSum: A Large-Scale and High-Quality Dataset for Abstractive News Summarization."](https://aclanthology.org/2024.naacl-long.406/)
 
 CCSum is a large-scale and high-quality dataset for abstractive news summarization.
 It contains 1.3 million pairs of articles and reference summaries derived from 35 million news articles from CommonCrawl News.
@@ -61,4 +61,22 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the CC-BY-NC-4.0 License. See the LICENSE file.
+
+## Cite: Bibtex
+@inproceedings{jiang-dreyer-2024-ccsum,
+    title = "{CCS}um: A Large-Scale and High-Quality Dataset for Abstractive News Summarization",
+    author = "Jiang, Xiang  and
+      Dreyer, Markus",
+    editor = "Duh, Kevin  and
+      Gomez, Helena  and
+      Bethard, Steven",
+    booktitle = "Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)",
+    month = jun,
+    year = "2024",
+    address = "Mexico City, Mexico",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2024.naacl-long.406",
+    pages = "7306--7336",
+    abstract = "Training a supervised news summarization model requires large amounts of high-quality training data consisting of news articles paired with reference summaries. However, obtaining such data is costly, and existing datasets contain considerable amount of noise. We present a new large-scale and high-quality dataset for supervised abstractive news summarization containing 1.3 million training samples, which we call CCSum. In creating this dataset, we take advantage of the journalistic inverted-pyramid style in news writing: In some articles, the first sentence can be considered a summary of the reported story. Accordingly, among 35 million CommonCrawl News articles, we identify pairs of articles about the same news story and use one article{'}s first sentence as the summary for the other article. To ensure high quality, we apply strict filters whose parameters we optimize using Bayesian optimization. We show that the resulting dataset is more factual and informative than established summarization datasets; less than 1{\%} of the summaries have major factual inconsistencies with the corresponding news articles, compared to 5.5{\%} to 15.4{\%} in existing datasets, according to our human evaluation. Summarization models trained on our dataset are more favored compared to those trained on CNN/Daily Mail. The proposed dataset can open new opportunities for future research in abstractive summarization.",
+}
 
