@@ -7,7 +7,7 @@ In creating this dataset, we cluster CommonCrawl News articles into news events 
 The human evaluation shows the proposed dataset has higher quality---in terms of factual consistency, informativeness, and coherence---than established abstractive summarization datasets.
 
 ## CCSum Dataset
-We release the summary, article url and meta-data of the CCSum dataset. The articles needs to be downloaded from CC-News.
+We release the summary, article url and meta-data of the CCSum dataset. The articles needs to be downloaded from their original urls.
 
 ### Summary and meta-data
 The summaries and meta-data can be found in Huggingface [`ccsum/ccsum_summary_only`](https://huggingface.co/datasets/ccsum/ccsum_summary_only).
@@ -51,7 +51,9 @@ python align_article_with_summary.py
 ```
 The final dataset will be stored in `./data/ccsum_aligned`
 
-Please reach out to us if you encounter any issues with downloading the dataset.
+Note that a subset of the articles are being removed from CCNews due to licensing issues.
+
+Please reach out to us if you encounter issues with downloading the dataset.
 
 
 ## Security
@@ -62,7 +64,8 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 
 This library is licensed under the CC-BY-NC-4.0 License. See the LICENSE file.
 
-## Cite: Bibtex
+## Citation: Bibtex
+```
 @inproceedings{jiang-dreyer-2024-ccsum,
     title = "{CCS}um: A Large-Scale and High-Quality Dataset for Abstractive News Summarization",
     author = "Jiang, Xiang  and
@@ -79,4 +82,4 @@ This library is licensed under the CC-BY-NC-4.0 License. See the LICENSE file.
     pages = "7306--7336",
     abstract = "Training a supervised news summarization model requires large amounts of high-quality training data consisting of news articles paired with reference summaries. However, obtaining such data is costly, and existing datasets contain considerable amount of noise. We present a new large-scale and high-quality dataset for supervised abstractive news summarization containing 1.3 million training samples, which we call CCSum. In creating this dataset, we take advantage of the journalistic inverted-pyramid style in news writing: In some articles, the first sentence can be considered a summary of the reported story. Accordingly, among 35 million CommonCrawl News articles, we identify pairs of articles about the same news story and use one article{'}s first sentence as the summary for the other article. To ensure high quality, we apply strict filters whose parameters we optimize using Bayesian optimization. We show that the resulting dataset is more factual and informative than established summarization datasets; less than 1{\%} of the summaries have major factual inconsistencies with the corresponding news articles, compared to 5.5{\%} to 15.4{\%} in existing datasets, according to our human evaluation. Summarization models trained on our dataset are more favored compared to those trained on CNN/Daily Mail. The proposed dataset can open new opportunities for future research in abstractive summarization.",
 }
-
+```
