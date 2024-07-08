@@ -31,8 +31,8 @@ Create python environment:
 conda create -y -n ccsum python=3.8 && conda activate ccsum
 
 # Install newsplease crawler
-pip install news-please
-pip install lxml=4.8.0
+pip install news-please==1.5.48
+pip install lxml==4.8.0
 
 pip install tqdm datasets
 
